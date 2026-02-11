@@ -1,17 +1,40 @@
 name: CI
 
 on:
-  pull_request:
-    branches: [ main, develop ]
   push:
-    branches: [ develop ]
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
 
+# Permissões mínimas e corretas para criar PR automaticamente
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+          bundler-cache: true
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
   test:
     runs-on: ubuntu-latest
+    needs: lint
 
     services:
       postgres:
@@ -43,8 +66,43 @@ jobs:
       - name: Prepare DB
         run: bundle exec rails db:prepare
 
-      - name: Run Rubocop
-        run: bundle exec rubocop
-
       - name: Run tests
         run: bundle exec rails test
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && (github.ref_name == 'develop' || github.ref_name == 'main')
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+  
+      - name: Build Docker image (Dockerfile.dev)
+        run: docker build -f Dockerfile.dev -t bet-elefantinho-ci .
+
+
+  auto-pr:
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - test
+      - docker-build
+    # Só cria PR quando o push é diretamente na branch develop (git flow)
+    if: github.ref_name == 'develop'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create PR develop → main
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          head: develop
+          title: "Auto merge develop → main"
+          body: "CI passou automaticamente (lint, testes e build Docker)"

@@ -13,6 +13,8 @@ RUN apt-get update -qq && \
     && rm -rf /var/lib/apt/lists/*
 
 # Instala gems (inclui development/test)
+WORKDIR /rails
+RUN pwd && ls -la
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
