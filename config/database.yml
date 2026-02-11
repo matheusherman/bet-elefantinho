@@ -1,27 +1,16 @@
 default: &default
+  adapter: postgresql
+  encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
 
 development:
-  adapter: postgresql
+  <<: *default
   url: <%= ENV["DATABASE_URL"] %>
 
 test:
-  adapter: postgresql
+  <<: *default
   url: <%= ENV["DATABASE_URL"] %>
 
 production:
-  primary:
-    adapter: sqlite3
-    database: storage/production.sqlite3
-  cache:
-    adapter: sqlite3
-    database: storage/production_cache.sqlite3
-    migrations_paths: db/cache_migrate
-  queue:
-    adapter: sqlite3
-    database: storage/production_queue.sqlite3
-    migrations_paths: db/queue_migrate
-  cable:
-    adapter: sqlite3
-    database: storage/production_cable.sqlite3
-    migrations_paths: db/cable_migrate
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
