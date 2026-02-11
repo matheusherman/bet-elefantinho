@@ -1,9 +1,9 @@
 class Jackpot < ApplicationRecord
   enum status: {
-    waiting: 'waiting',
-    runing: 'runing',
-    finished: 'finished',
-    cancelled: 'cancelled'
+    waiting: "waiting",
+    runing: "runing",
+    finished: "finished",
+    cancelled: "cancelled"
   }
 
   has_many :bets, dependent: :destroy
@@ -21,5 +21,4 @@ class Jackpot < ApplicationRecord
       errors.add(:draw_at, "must be in the future")
     end
   end
-
 end
