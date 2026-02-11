@@ -1,16 +1,16 @@
 class Jackpot < ApplicationRecord
   enum :status, {
     waiting: "waiting",
-    runing: "runing",
+    running: "running",
     finished: "finished",
     cancelled: "cancelled"
   }
 
-  has_many :bets, dependent: :destroy
-  has_many :users, through: :bets
+  has_many :jackpot_entries, dependent: :destroy
+  has_many :users, through: :jackpot_entries
 
   validates :status, presence: true
-  validates :total_amount, presence: true
+  validates :total_amount, presence: true, numericality: { greater_than: 0 }
   validates :draw_at, presence: true
   validate :draw_at_in_future
 
