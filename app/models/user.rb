@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+
+  include CpfValidatable
   # Devise modules
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
