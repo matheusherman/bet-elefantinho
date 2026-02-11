@@ -2,7 +2,7 @@ class Jackpot < ApplicationRecord
   enum status: {
     waiting: 'waiting',
     runing: 'runing',
-    finished: 'finished'
+    finished: 'finished',
     cancelled: 'cancelled'
   }
 
