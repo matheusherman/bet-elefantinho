@@ -1,5 +1,5 @@
 class Jackpot < ApplicationRecord
-  enum status {
+  enum status: {
     waiting: 'waiting',
     runing: 'runing',
     finished: 'finished'
