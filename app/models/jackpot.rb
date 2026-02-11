@@ -1,7 +1,7 @@
 class Jackpot < ApplicationRecord
-  enum status: {
+  enum :status {
     waiting: "waiting",
-    runing: "runing",
+    running: "running",
     finished: "finished",
     cancelled: "cancelled"
   }
