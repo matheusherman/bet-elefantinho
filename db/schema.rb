@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_11_124811) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_11_133452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "jackpot_entries", force: :cascade do |t|
+    t.decimal "amount", null: false
+    t.datetime "created_at", null: false
+    t.bigint "jackpot_id", null: false
+    t.integer "number", null: false, array: true
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["jackpot_id"], name: "index_jackpot_entries_on_jackpot_id"
+    t.index ["user_id"], name: "index_jackpot_entries_on_user_id"
+  end
 
   create_table "jackpots", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -55,6 +66,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_11_124811) do
     t.index ["user_id"], name: "index_wallets_on_user_id"
   end
 
+  add_foreign_key "jackpot_entries", "jackpots"
+  add_foreign_key "jackpot_entries", "users"
   add_foreign_key "transactions", "wallets"
   add_foreign_key "wallets", "users"
 end
