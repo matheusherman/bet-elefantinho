@@ -1,0 +1,28 @@
+FROM ruby:3.3.4
+
+WORKDIR /rails
+
+# Dependências do sistema para dev
+RUN apt-get update -qq && \
+    apt-get install -y \
+      build-essential \
+      libpq-dev \
+      nodejs \
+      git \
+      curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instala gems (inclui development/test)
+WORKDIR /rails
+RUN pwd && ls -la
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Código da aplicação
+COPY . .
+
+ENV RAILS_ENV=development
+
+EXPOSE 3000
+
+CMD ["bin/rails", "server", "-b", "0.0.0.0"]
